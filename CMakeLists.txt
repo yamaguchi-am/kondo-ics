@@ -16,3 +16,6 @@ target_link_libraries(kondo_ics_example gflags kondo_ics)
 
 add_executable(kondo_ics_tool kondo_ics_tool.cc)
 target_link_libraries(kondo_ics_tool gflags kondo_ics)
+
+add_executable(write_id write_id.cc)
+target_link_libraries(write_id gflags kondo_ics)

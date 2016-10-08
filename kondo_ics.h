@@ -19,6 +19,7 @@ class KondoIcs {
   CommunicationResult SetPos(int16_t id, int16_t value,
       uint16_t* capture) const;
   CommunicationResult SetSpeed(int16_t id, int16_t value) const;
+  CommunicationResult WriteId(uint16_t id) const;
 
   // Gets current position of a servo and turn on servo to hold there.
   // This function is meant to be used for soft-start at the startup of a
@@ -32,6 +33,9 @@ class KondoIcs {
       const;
 
  private:
+  static const uint8_t kServoId = 0b11100000;  // 111xxxxx (xxxxx = new ID)
+  static const uint8_t kServoIdSubcommandRead = 0x00;
+  static const uint8_t kServoIdSubcommandWrite = 0x01;
   static const uint8_t kParameterRead = 0b10100000;  // 101xxxxx (xxxxx = servo ID)
   static const uint8_t kParameterWrite = 0b11000000;  // 110xxxxx (xxxxx = servo ID)
   static const uint8_t kSubcommandEeprom = 0x00;

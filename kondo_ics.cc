@@ -194,3 +194,18 @@ KondoIcs::CommunicationResult KondoIcs::PseudoCaptureAndHold(int16_t id,
   *capture = capturedPosition;
   return result;
 }
+
+KondoIcs::CommunicationResult KondoIcs::WriteId(uint16_t id) const {
+  char cmd[4];
+  char result[5];
+  cmd[0] = kServoId | (id & 0x1f);
+  cmd[1] = kServoIdSubcommandWrite;
+  cmd[2] = kServoIdSubcommandWrite;
+  cmd[3] = kServoIdSubcommandWrite;
+  KondoIcs::CommunicationResult resultCode = ExecuteCommand(4, cmd, 5, result,
+      kCommTimeout);
+  if (resultCode != SUCCESS) {
+    return resultCode;
+  }
+  return result[4] == cmd[0] ? SUCCESS : RX_VERIFY_ERROR;
+}
