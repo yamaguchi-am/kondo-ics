@@ -1,13 +1,14 @@
 // Soft-start and swings a servo by a sinusoidal wave pattern.
 
+#include <gflags/gflags.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
+
 #include <iostream>
 
-#include <gflags/gflags.h>
 #include "kondo_ics.h"
 
 DEFINE_string(port, "/dev/ttyUSB0", "serial port of USB ICS Adapter");
@@ -22,7 +23,7 @@ const int kCenter = 7500;
 double gettimeofdayInSeconds() {
   struct timeval t;
   gettimeofday(&t, NULL);
-  return (double) t.tv_sec + (double) t.tv_usec * 1e-6;
+  return (double)t.tv_sec + (double)t.tv_usec * 1e-6;
 }
 
 void MoveToCenter(const KondoIcs& k, int id) {
@@ -59,7 +60,7 @@ void SwingDemo(const KondoIcs& k, int id) {
   }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   KondoIcs ics(FLAGS_port, FLAGS_baudrate);
   MoveToCenter(ics, FLAGS_id);

@@ -1,10 +1,11 @@
 // Commandline tool to send position to a single servo.
 
-#include <unistd.h>
-#include <stdio.h>
-#include <iostream>
-#include <stdlib.h>
 #include <gflags/gflags.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <iostream>
 
 #include "kondo_ics.h"
 
@@ -22,7 +23,7 @@ void WritePos(const KondoIcs& k, int id, int value) {
   cout << capture << endl;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   KondoIcs ics(FLAGS_port, FLAGS_baudrate);
   WritePos(ics, FLAGS_id, FLAGS_value);

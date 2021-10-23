@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -68,13 +69,14 @@ KondoIcs::~KondoIcs() {
 }
 
 KondoIcs::CommunicationResult KondoIcs::ReadBytes(char* result,
-    size_t expectBytes, int timeout) const {
+                                                  size_t expectBytes,
+                                                  int timeout) const {
   size_t recvSize = 0;
   for (int retryCount = 0; retryCount < timeout && recvSize < expectBytes;
-      retryCount++) {
+       retryCount++) {
     int res = read(comm_fd, &result[recvSize], expectBytes - recvSize);
     if (res > 0) {
-      if ((size_t) res <= expectBytes) {
+      if ((size_t)res <= expectBytes) {
         recvSize += res;
       } else {
         // Excessive data
@@ -91,14 +93,14 @@ KondoIcs::CommunicationResult KondoIcs::ReadBytes(char* result,
 }
 
 KondoIcs::CommunicationResult KondoIcs::SetPos(int16_t id, int16_t value,
-    uint16_t* capture) const {
+                                               uint16_t* capture) const {
   char cmd[3];
   cmd[0] = 0x80 | (id & 0x1f);
   cmd[1] = (value & 0x3f80) >> 7;
   cmd[2] = value & 0x7f;
   char recv[6];
-  CommunicationResult result = ExecuteCommand(3, cmd, 6, recv,
-      KondoIcs::kCommTimeout);
+  CommunicationResult result =
+      ExecuteCommand(3, cmd, 6, recv, KondoIcs::kCommTimeout);
   // TODO: verify R_CMD of return packet
   if (result != SUCCESS) {
     if (FLAGS_enable_ics_debug_output) {
@@ -106,13 +108,15 @@ KondoIcs::CommunicationResult KondoIcs::SetPos(int16_t id, int16_t value,
     }
     return result;
   }
-  *capture = (((uint16_t) (unsigned char) recv[4]) << 7) | (uint16_t) recv[5];
+  *capture = (((uint16_t)(unsigned char)recv[4]) << 7) | (uint16_t)recv[5];
   return SUCCESS;
 }
 
 KondoIcs::CommunicationResult KondoIcs::ExecuteCommand(size_t sendSize,
-    const char* writeData, size_t recvSize, char* receiveData,
-    int timeout) const {
+                                                       const char* writeData,
+                                                       size_t recvSize,
+                                                       char* receiveData,
+                                                       int timeout) const {
   if (write(comm_fd, writeData, sendSize) != (ssize_t)sendSize) {
     return TX_FAIL;
   }
@@ -120,11 +124,11 @@ KondoIcs::CommunicationResult KondoIcs::ExecuteCommand(size_t sendSize,
   if (FLAGS_enable_ics_debug_output) {
     cerr << "write: ";
     for (size_t i = 0; i < sendSize; i++) {
-      cerr << std::hex << (int) ((unsigned char) writeData[i]) << " ";
+      cerr << std::hex << (int)((unsigned char)writeData[i]) << " ";
     }
     cerr << endl << "receive " << result << ": ";
     for (size_t i = 0; i < recvSize; i++) {
-      cerr << std::hex << (int) ((unsigned char) receiveData[i]) << " ";
+      cerr << std::hex << (int)((unsigned char)receiveData[i]) << " ";
     }
     cerr << endl;
   }
@@ -141,12 +145,12 @@ KondoIcs::CommunicationResult KondoIcs::ExecuteCommand(size_t sendSize,
 }
 
 KondoIcs::CommunicationResult KondoIcs::SetSpeed(int16_t id,
-    int16_t value) const {
+                                                 int16_t value) const {
   return ChangeCharacteristic(id, kSubcommandSpeed, value);
 }
 
-KondoIcs::CommunicationResult KondoIcs::ChangeCharacteristic(int16_t id,
-    int16_t subCommand, int16_t value) const {
+KondoIcs::CommunicationResult KondoIcs::ChangeCharacteristic(
+    int16_t id, int16_t subCommand, int16_t value) const {
   char cmd[3];
   cmd[0] = kParameterWrite | (id & 0x1f);
   cmd[1] = subCommand;
@@ -156,20 +160,21 @@ KondoIcs::CommunicationResult KondoIcs::ChangeCharacteristic(int16_t id,
   // TODO: verify return packet
 }
 
-KondoIcs::CommunicationResult KondoIcs::ReadCharacteristic(int16_t id,
-    int16_t subCommand, int16_t* resultValue) const {
+KondoIcs::CommunicationResult KondoIcs::ReadCharacteristic(
+    int16_t id, int16_t subCommand, int16_t* resultValue) const {
   char cmd[2];
   cmd[0] = kParameterRead | (id & 0x1f);
   cmd[1] = subCommand;
   char recv[5];
-  KondoIcs::CommunicationResult commResult = ExecuteCommand(2, cmd, 5, recv, kCommTimeout);
+  KondoIcs::CommunicationResult commResult =
+      ExecuteCommand(2, cmd, 5, recv, kCommTimeout);
   // TODO: verify return packet
   *resultValue = (uint16_t)recv[4];
   return commResult;
 }
 
-KondoIcs::CommunicationResult KondoIcs::PseudoCaptureAndHold(int16_t id,
-    uint16_t* capture) const {
+KondoIcs::CommunicationResult KondoIcs::PseudoCaptureAndHold(
+    int16_t id, uint16_t* capture) const {
   // Capture position and hold servo there.
   //
   // KONDO ICS doesn't have a single command to capture current target position
@@ -202,8 +207,8 @@ KondoIcs::CommunicationResult KondoIcs::WriteId(uint16_t id) const {
   cmd[1] = kServoIdSubcommandWrite;
   cmd[2] = kServoIdSubcommandWrite;
   cmd[3] = kServoIdSubcommandWrite;
-  KondoIcs::CommunicationResult resultCode = ExecuteCommand(4, cmd, 5, result,
-      kCommTimeout);
+  KondoIcs::CommunicationResult resultCode =
+      ExecuteCommand(4, cmd, 5, result, kCommTimeout);
   if (resultCode != SUCCESS) {
     return resultCode;
   }

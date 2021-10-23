@@ -3,8 +3,9 @@
 // Otherwise, multiple servos will respond to the command and cause signal
 // collision.
 
-#include <iostream>
 #include <gflags/gflags.h>
+
+#include <iostream>
 
 #include "kondo_ics.h"
 

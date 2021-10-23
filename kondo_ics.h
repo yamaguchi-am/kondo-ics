@@ -4,12 +4,17 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <termios.h>
+
 #include <string>
 
 class KondoIcs {
  public:
   enum CommunicationResult {
-    SUCCESS, TX_FAIL, RX_TIMEOUT_ERROR, RX_LENGTH_ERROR, RX_VERIFY_ERROR
+    SUCCESS,
+    TX_FAIL,
+    RX_TIMEOUT_ERROR,
+    RX_LENGTH_ERROR,
+    RX_VERIFY_ERROR
   };
 
   KondoIcs(std::string deviceFileName, int baudrate);
@@ -17,7 +22,7 @@ class KondoIcs {
   ~KondoIcs();
 
   CommunicationResult SetPos(int16_t id, int16_t value,
-      uint16_t* capture) const;
+                             uint16_t* capture) const;
   CommunicationResult SetSpeed(int16_t id, int16_t value) const;
   CommunicationResult WriteId(uint16_t id) const;
 
@@ -29,15 +34,16 @@ class KondoIcs {
   // feedback control. Therefore programs using this function should move
   // servos to desired positions smoothly after calling this function, starting
   // from the captured positions.
-  CommunicationResult PseudoCaptureAndHold(int16_t id, uint16_t* capture)
-      const;
+  CommunicationResult PseudoCaptureAndHold(int16_t id, uint16_t* capture) const;
 
  private:
   static const uint8_t kServoId = 0b11100000;  // 111xxxxx (xxxxx = new ID)
   static const uint8_t kServoIdSubcommandRead = 0x00;
   static const uint8_t kServoIdSubcommandWrite = 0x01;
-  static const uint8_t kParameterRead = 0b10100000;  // 101xxxxx (xxxxx = servo ID)
-  static const uint8_t kParameterWrite = 0b11000000;  // 110xxxxx (xxxxx = servo ID)
+  static const uint8_t kParameterRead =
+      0b10100000;  // 101xxxxx (xxxxx = servo ID)
+  static const uint8_t kParameterWrite =
+      0b11000000;  // 110xxxxx (xxxxx = servo ID)
   static const uint8_t kSubcommandEeprom = 0x00;
   static const uint8_t kSubcommandStretch = 0x01;
   static const uint8_t kSubcommandSpeed = 0x02;
@@ -47,16 +53,18 @@ class KondoIcs {
   int comm_fd;
   struct termios existingTermios;
   void Open(const char* deviceFileName, int baudrate);
-  CommunicationResult ReadBytes(char* result, size_t expectBytes, int timeout) const;
+  CommunicationResult ReadBytes(char* result, size_t expectBytes,
+                                int timeout) const;
   CommunicationResult ExecuteCommand(size_t sendSize, const char* sendData,
-      size_t receiveBytes, char* receiveData, int timeout) const;
-  CommunicationResult ChangeCharacteristic(int16_t id, int16_t subCommand, int16_t value) const;
-  CommunicationResult ReadCharacteristic(int16_t id, int16_t subCommand, int16_t* value) const;
+                                     size_t receiveBytes, char* receiveData,
+                                     int timeout) const;
+  CommunicationResult ChangeCharacteristic(int16_t id, int16_t subCommand,
+                                           int16_t value) const;
+  CommunicationResult ReadCharacteristic(int16_t id, int16_t subCommand,
+                                         int16_t* value) const;
 
   static const int kCommTimeout = 1000;
-  bool IsError(CommunicationResult result) const {
-    return result != SUCCESS;
-  }
+  bool IsError(CommunicationResult result) const { return result != SUCCESS; }
 };
 
 #endif /* KONDO_ICS_H_ */
