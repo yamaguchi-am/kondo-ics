@@ -11,7 +11,6 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -147,6 +146,16 @@ KondoIcs::CommunicationResult KondoIcs::ExecuteCommand(size_t sendSize,
 KondoIcs::CommunicationResult KondoIcs::SetSpeed(int16_t id,
                                                  int16_t value) const {
   return ChangeCharacteristic(id, kSubcommandSpeed, value);
+}
+
+KondoIcs::CommunicationResult KondoIcs::SetStretch(int16_t id,
+                                                   int16_t value) const {
+  return ChangeCharacteristic(id, kSubcommandStretch, value);
+}
+
+KondoIcs::CommunicationResult KondoIcs::GetStretch(int16_t id,
+                                                   int16_t* out_value) const {
+  return ReadCharacteristic(id, kSubcommandStretch, out_value);
 }
 
 KondoIcs::CommunicationResult KondoIcs::ChangeCharacteristic(

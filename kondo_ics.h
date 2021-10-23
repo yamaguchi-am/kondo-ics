@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <termios.h>
-
 #include <string>
 
 class KondoIcs {
@@ -24,6 +23,11 @@ class KondoIcs {
   CommunicationResult SetPos(int16_t id, int16_t value,
                              uint16_t* capture) const;
   CommunicationResult SetSpeed(int16_t id, int16_t value) const;
+
+  // Sets/gets the stretch value. Stretch is similar to P gain.
+  CommunicationResult SetStretch(int16_t id, int16_t value) const;
+  CommunicationResult GetStretch(int16_t id, int16_t* out_value) const;
+
   CommunicationResult WriteId(uint16_t id) const;
 
   // Gets current position of a servo and turn on servo to hold there.
