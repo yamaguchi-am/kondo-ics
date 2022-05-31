@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -71,6 +72,9 @@ KondoIcs::CommunicationResult KondoIcs::ReadBytes(char* result,
                                                   size_t expectBytes,
                                                   int timeout) const {
   size_t recvSize = 0;
+  struct timespec ts;
+  ts.tv_nsec = 100;
+  ts.tv_sec = 0;
   for (int retryCount = 0; retryCount < timeout && recvSize < expectBytes;
        retryCount++) {
     int res = read(comm_fd, &result[recvSize], expectBytes - recvSize);
@@ -82,7 +86,7 @@ KondoIcs::CommunicationResult KondoIcs::ReadBytes(char* result,
         return RX_LENGTH_ERROR;
       }
     }
-    usleep(1);
+    nanosleep(&ts, NULL);
   }
   if (recvSize != expectBytes) {
     // Timeout
